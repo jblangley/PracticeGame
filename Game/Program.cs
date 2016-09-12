@@ -61,6 +61,7 @@ namespace Game
                     BossLoop();
                     break;
                 case 4:
+                    GruntArmyLoop();
                     break;
                 default:
                     break;
@@ -71,7 +72,7 @@ namespace Game
             Console.WriteLine("1 - Grunt");
             Console.WriteLine("2 - Wolf");
             Console.WriteLine("3 - Boss");
-            Console.WriteLine("4 - Exit");
+            Console.WriteLine("4 - Grunt Army");
         }
         public static Unit StartingSetupHero()
         {
@@ -87,7 +88,7 @@ namespace Game
         {
             Unit Grunt = new Unit();
             Grunt.BaseAttack = 5;
-            Grunt.BaseDefense = 70;
+            Grunt.BaseDefense = 8;
             Grunt.Name = "Grunt";
             return Grunt;
         }
@@ -138,6 +139,21 @@ namespace Game
                 loop = Match(hero, grunt);
             }
         }
+
+        public static void GruntArmyLoop()
+        {//Make it easy to add enemies to that list to fight
+            Unit hero = StartingSetupHero();
+            List<Unit> AllEnemiesFighting = new List<Unit>();
+            AllEnemiesFighting.Add(StartingSetupGrunt());
+            AllEnemiesFighting.Add(StartingSetupGrunt());
+            AllEnemiesFighting.Add(StartingSetupGrunt());
+            int loop = 0;
+            while (loop < AllEnemiesFighting.Count)
+            {
+                loop = MatchMultiples(hero, AllEnemiesFighting);
+                loop = CheckEndGameList(hero, AllEnemiesFighting, loop);
+            }
+        }
         public static int Match(Unit hero, Unit grunt)
         {
             bool frozen = false;
@@ -167,6 +183,29 @@ namespace Game
             option = CheckEndGame(hero, grunt, option);
             Console.ReadKey();
             return option;
+        }
+        public static int MatchMultiples(Unit hero, List<Unit> AllEnemiesFighting)
+        {
+            int option = DisplayChooseWhichToAttack(hero, AllEnemiesFighting)-1;
+            if (option<AllEnemiesFighting.Count)
+            {
+            Match(hero, AllEnemiesFighting[option]);
+            }
+            AllEnemiesFighting.RemoveAll(item => item.BaseDefense <= 0);
+            return option;
+        }
+        public static int DisplayChooseWhichToAttack(Unit hero, List<Unit> AllEnemiesFighting)
+        {
+            int count = 1;
+            Console.Clear();
+            Console.WriteLine("Your Health Left: "+hero.BaseDefense);
+            for (int index = 0; index < AllEnemiesFighting.Count; index++)
+            {
+                count++;
+                Console.WriteLine(index+1 + " - " + AllEnemiesFighting[index].Name + " has " + AllEnemiesFighting[index].BaseDefense + " Health Left");
+            }
+            Console.WriteLine(count + " - To Exit");
+            return Convert.ToInt32(Prompt("Which enemy are you going to attack?"));
         }
         public static void CheckIfEnemyAttacks(Unit hero, Unit grunt, bool frozen)
         {
@@ -285,6 +324,20 @@ namespace Game
                 option = 5;
             }
             else if(grunt.BaseDefense<=0)
+            {
+                Console.WriteLine("You Win!");
+                option = 5;
+            }
+            return option;
+        }
+        public static int CheckEndGameList(Unit hero, List<Unit> AllEnemiesFighting, int option)
+        {
+            if (hero.BaseDefense <= 0)
+            {
+                Console.WriteLine("You Lost!");
+                option = 5;
+            }
+            else if (AllEnemiesFighting.Count < 1)
             {
                 Console.WriteLine("You Win!");
                 option = 5;
