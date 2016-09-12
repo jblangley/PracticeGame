@@ -12,6 +12,7 @@ namespace Game
         {
             RunLoop();
         }
+        //////////////////////////////////////////Initailizes the game///////////////////////////////////////////////
         static void RunLoop()
         {
             int exit = 0;
@@ -45,9 +46,10 @@ namespace Game
             Console.WriteLine("1 - Start Game");
             Console.WriteLine("2 - Exit Game");
         }
+        ////////////////////////////////////Player Chooses their battle//////////////////////////////////////
         public static void EnemyChoice()
         {
-            DisplayUnitMenu();
+            DisplayEnemyMenu();
             int option = Convert.ToInt32(Prompt("Which Unit would you like to face?"));
             switch (option)
             {
@@ -63,17 +65,23 @@ namespace Game
                 case 4:
                     GruntArmyLoop();
                     break;
+                case 5:
+                    ArmyLoop();
+                    break;
                 default:
                     break;
             }
         }
-        public static void DisplayUnitMenu()
+        public static void DisplayEnemyMenu()
         {
+            Console.Clear();
             Console.WriteLine("1 - Grunt");
             Console.WriteLine("2 - Wolf");
             Console.WriteLine("3 - Boss");
-            Console.WriteLine("4 - Grunt Army");
+            Console.WriteLine("4 - Grunt Squad");
+            Console.WriteLine("5 - Army Creation");
         }
+        ////////////////////////////////////////////Creates Units/////////////////////////////////////////////////////
         public static Unit StartingSetupHero()
         {
             Unit Hero = new Unit();
@@ -92,6 +100,31 @@ namespace Game
             Grunt.Name = "Grunt";
             return Grunt;
         }
+        public static Unit StartingSetupWolf()
+        {
+            Unit Wolf = new Unit();
+            Wolf.BaseAttack = 15;
+            Wolf.BaseDefense = 75;
+            Wolf.Name = "Wolf";
+            return Wolf;
+        }
+        public static Unit StartingSetupBoss()
+        {
+            Unit Boss = new Unit();
+            Boss.BaseAttack = 15;
+            Boss.BaseDefense = 200;
+            Boss.Name = "Boss";
+            Boss.Magic = 15;
+            return Boss;
+        }
+        public static void StartingSetupGruntSquad(List<Unit> AllEnemiesFighting)
+        {
+            for (int index = 0; index < 4; index++)
+            {
+                AllEnemiesFighting.Add(StartingSetupGrunt());
+            }
+        }
+        ///////////////////////////////////Runs the choosen battle////////////////////////////////
         public static void GruntLoop()
         {
             Unit hero = StartingSetupHero();
@@ -101,14 +134,6 @@ namespace Game
             {
                 loop = Match(hero, grunt);
             }
-        }
-        public static Unit StartingSetupWolf()
-        {
-            Unit Wolf = new Unit();
-            Wolf.BaseAttack = 15;
-            Wolf.BaseDefense = 75;
-            Wolf.Name = "Wolf";
-            return Wolf;
         }
         public static void WolfLoop()
         {
@@ -120,15 +145,6 @@ namespace Game
                 loop = Match(hero, grunt);
             }
         }
-        public static Unit StartingSetupBoss()
-        {
-            Unit Boss = new Unit();
-            Boss.BaseAttack = 15;
-            Boss.BaseDefense = 200;
-            Boss.Name = "Boss";
-            Boss.Magic = 15;
-            return Boss;
-        }
         public static void BossLoop()
         {
             Unit hero = StartingSetupHero();
@@ -139,14 +155,11 @@ namespace Game
                 loop = Match(hero, grunt);
             }
         }
-
         public static void GruntArmyLoop()
-        {//Make it easy to add enemies to that list to fight
+        {
             Unit hero = StartingSetupHero();
             List<Unit> AllEnemiesFighting = new List<Unit>();
-            AllEnemiesFighting.Add(StartingSetupGrunt());
-            AllEnemiesFighting.Add(StartingSetupGrunt());
-            AllEnemiesFighting.Add(StartingSetupGrunt());
+            StartingSetupGruntSquad(AllEnemiesFighting);
             int loop = 0;
             while (loop < AllEnemiesFighting.Count)
             {
@@ -154,18 +167,69 @@ namespace Game
                 loop = CheckEndGameList(hero, AllEnemiesFighting, loop);
             }
         }
+        /////////////Allows the player to choose multiple enemies
+        public static void ArmyLoop()
+        {
+            Unit hero = StartingSetupHero();
+            List<Unit> AllEnemiesFighting = new List<Unit>();
+            AddEnemyLoop(AllEnemiesFighting);
+            MatchMultiplesLoop(hero, AllEnemiesFighting);
+        }
+        public static void AddEnemyLoop(List<Unit> AllEnemiesFighting)
+        {
+            int loop = 0;
+            while (loop < 5)
+            {
+                loop = AddEnemies(AllEnemiesFighting);
+            }
+        }
+        public static int AddEnemies(List<Unit> AllEnemiesFighting)
+        {
+            DisplayUnitMenu();
+            int choice = Convert.ToInt32(Prompt("What enemies will you face?"));
+            switch (choice)
+            {
+                case 1:
+                    AllEnemiesFighting.Add(StartingSetupGrunt());
+                    break;
+                case 2:
+                    AllEnemiesFighting.Add(StartingSetupWolf());
+                    break;
+                case 3:
+                    AllEnemiesFighting.Add(StartingSetupBoss());
+                    break;
+                case 4:
+                    StartingSetupGruntSquad(AllEnemiesFighting);
+                    break;
+                case 5:
+                    break;
+                default:
+                    break;
+            }
+            return choice;
+        }
+        public static void DisplayUnitMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("1 - Grunt");
+            Console.WriteLine("2 - Wolf");
+            Console.WriteLine("3 - Boss");
+            Console.WriteLine("4 - Grunt Squad");
+            Console.WriteLine("5 - Exit");
+        }
+        /////////////////////The Battle options for 1v1 or After an enemy is selected from the Army//////////////
         public static int Match(Unit hero, Unit grunt)
         {
             bool frozen = false;
-            int option = DisplayStatsAndOptions(hero,grunt);
+            int option = DisplayStatsAndOptions(hero, grunt);
             switch (option)
             {
                 case 1:
                     grunt.BaseDefense -= hero.BaseAttack;
-                    Console.WriteLine(hero.Name+" did "+hero.BaseAttack+" damage to " + grunt.Name);
+                    Console.WriteLine(hero.Name + " did " + hero.BaseAttack + " damage to " + grunt.Name);
                     break;
                 case 2:
-                    Fire(hero,grunt);
+                    Fire(hero, grunt);
                     break;
                 case 3:
                     frozen = Ice(hero, grunt);
@@ -185,24 +249,41 @@ namespace Game
             return option;
         }
         public static int MatchMultiples(Unit hero, List<Unit> AllEnemiesFighting)
-        {
-            int option = DisplayChooseWhichToAttack(hero, AllEnemiesFighting)-1;
-            if (option<AllEnemiesFighting.Count)
+        {///////////////need to make more methods
+            int option = DisplayChooseWhichToAttack(hero, AllEnemiesFighting) - 1;
+            if (option < AllEnemiesFighting.Count)//
             {
-            Match(hero, AllEnemiesFighting[option]);
+                Match(hero, AllEnemiesFighting[option]);
             }
+            for (int index = 0; index < AllEnemiesFighting.Count; index++)//
+            {
+                if (index != option)
+                {
+                    EnemyCanAttack(hero, AllEnemiesFighting[index]);
+                }
+            }
+            Console.ReadKey();
             AllEnemiesFighting.RemoveAll(item => item.BaseDefense <= 0);
             return option;
+        }
+        public static void MatchMultiplesLoop(Unit hero, List<Unit> AllEnemiesFighting)
+        {
+            int loop = 0;
+            while (loop < AllEnemiesFighting.Count)
+            {
+                loop = MatchMultiples(hero, AllEnemiesFighting);
+                loop = CheckEndGameList(hero, AllEnemiesFighting, loop);
+            }
         }
         public static int DisplayChooseWhichToAttack(Unit hero, List<Unit> AllEnemiesFighting)
         {
             int count = 1;
             Console.Clear();
-            Console.WriteLine("Your Health Left: "+hero.BaseDefense);
+            Console.WriteLine("Your Health Left: " + hero.BaseDefense);
             for (int index = 0; index < AllEnemiesFighting.Count; index++)
             {
                 count++;
-                Console.WriteLine(index+1 + " - " + AllEnemiesFighting[index].Name + " has " + AllEnemiesFighting[index].BaseDefense + " Health Left");
+                Console.WriteLine(index + 1 + " - " + AllEnemiesFighting[index].Name + " has " + AllEnemiesFighting[index].BaseDefense + " Health Left");
             }
             Console.WriteLine(count + " - To Exit");
             return Convert.ToInt32(Prompt("Which enemy are you going to attack?"));
@@ -247,7 +328,7 @@ namespace Game
             else
             {
                 hero.BaseDefense -= grunt.BaseAttack;
-                Console.WriteLine(grunt.Name+" did "+ grunt.BaseAttack+" damage to "+ hero.Name);
+                Console.WriteLine(grunt.Name + " did " + grunt.BaseAttack + " damage to " + hero.Name);
             }
             return choose;
         }
@@ -257,18 +338,19 @@ namespace Game
             Console.WriteLine(hero.Name + "!");
             Console.WriteLine("Health: " + hero.BaseDefense);
             Console.WriteLine("Spells Left: " + hero.Magic);
-            Console.WriteLine("Potions Left: "+ hero.Item);
+            Console.WriteLine("Potions Left: " + hero.Item);
             Console.WriteLine("1 - Attack\t2 - Fire\t3 - Ice\n4 - Heal\t5 - Exit\n");
-            Console.WriteLine(them.Name+"!");
+            Console.WriteLine(them.Name + "!");
             Console.WriteLine("Health: " + them.BaseDefense);
             return Convert.ToInt32(Prompt("What are you going to do?"));
         }
+        /////////////////////////////////////Spells///////////////////////////////
         public static void Fire(Unit attacker, Unit defender)
         {
             if (attacker.Magic > 0)
             {
-                defender.BaseDefense -= attacker.Magic*2;
-                Console.WriteLine(attacker.Name+"'s fire did "+attacker.Magic*2+" to "+defender.Name);
+                defender.BaseDefense -= attacker.Magic * 2;
+                Console.WriteLine(attacker.Name + "'s fire did " + attacker.Magic * 2 + " to " + defender.Name);
                 attacker.Magic -= 1;
             }
             else
@@ -296,26 +378,28 @@ namespace Game
         {
             Random freeze = new Random();
             bool isFrozen = false;
-            int generate = freeze.Next(1,101);
-            if (generate>=70)
+            int generate = freeze.Next(1, 101);
+            if (generate >= 70)
             {
                 isFrozen = true;
             }
             return isFrozen;
         }
+        //////////////////////////////////Items//////////////////////////////////
         public static void Heal(Unit person)
         {
             if (person.Item > 0)
             {
                 person.Item -= 1;
                 person.BaseDefense = 100;
-                Console.WriteLine(person.Name+" heals himself for 100");
+                Console.WriteLine(person.Name + " heals himself for 100");
             }
             else
             {
                 Console.WriteLine("You don't have anymore potions!");
             }
         }
+        /////////////////////////////////End game checks//////////////////////////
         public static int CheckEndGame(Unit hero, Unit grunt, int option)
         {
             if (hero.BaseDefense <= 0)
@@ -323,7 +407,7 @@ namespace Game
                 Console.WriteLine("You Lost!");
                 option = 5;
             }
-            else if(grunt.BaseDefense<=0)
+            else if (grunt.BaseDefense <= 0)
             {
                 Console.WriteLine("You Win!");
                 option = 5;
@@ -344,6 +428,7 @@ namespace Game
             }
             return option;
         }
+        ////////////////Simple prompt////////////
         public static string Prompt(string input)
         {
             Console.WriteLine(input);
