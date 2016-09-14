@@ -11,7 +11,10 @@ namespace Game
         public string Name { get; set; }
         public int BaseAttack { get; set; }
         public int BaseDefense { get; set; }
+        public int MaxDefense { get; set; }
         public int Magic { get; set; }
+        public int MaxMagic { get; set; }
+        public string Weakness { get; set; }
         public int Item { get; set; }
 
         public Unit() { }
