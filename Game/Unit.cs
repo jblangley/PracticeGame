@@ -14,6 +14,9 @@ namespace Game
         public int MaxDefense { get; set; }
         public int Magic { get; set; }
         public int MaxMagic { get; set; }
+        public int FireBonus { get; set; }
+        public int IceBonus { get; set; }
+        public string Strength { get; set; }
         public string Weakness { get; set; }
         public int Item { get; set; }
 

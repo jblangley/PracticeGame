@@ -61,13 +61,22 @@ namespace Game
                     WolfLoop();
                     break;
                 case 3:
-                    BossLoop();
-                    break;
-                case 4:
                     GruntArmyLoop();
                     break;
+                case 4:
+                    FireElementalLoop();
+                    break;
                 case 5:
+                    IceElementalLoop();
+                    break;
+                case 6:
+                    BossLoop();
+                    break;
+                case 7:
                     ArmyLoop();
+                    break;
+                case 8:
+                    RandomArmyLoop();
                     break;
                 default:
                     Console.WriteLine("Incorrect Input");
@@ -79,19 +88,24 @@ namespace Game
             Console.Clear();
             Console.WriteLine("1 - Grunt");
             Console.WriteLine("2 - Wolf");
-            Console.WriteLine("3 - Boss");
-            Console.WriteLine("4 - Grunt Squad");
-            Console.WriteLine("5 - Army Creation");
+            Console.WriteLine("3 - Grunt Squad");
+            Console.WriteLine("4 - Fire Elemental");
+            Console.WriteLine("5 - Ice Elemental");
+            Console.WriteLine("6 - Boss");
+            Console.WriteLine("7 - Army Creation");
+            Console.WriteLine("8 - Random Match");
         }
         ////////////////////////////////////////////Creates Units/////////////////////////////////////////////////////
         public static Unit StartingSetupHero()
         {
             Unit Hero = new Unit();
-            Hero.BaseAttack = 8;
-            Hero.BaseDefense = 100;
-            Hero.MaxDefense = 100;
+            Hero.BaseAttack = 12;
+            Hero.BaseDefense = 150;
+            Hero.MaxDefense = 150;
             Hero.Item = 4;
             Hero.Magic = 12;
+            Hero.FireBonus = 13;
+            Hero.IceBonus = 3;
             Hero.MaxMagic = 12;
             Hero.Name = "Hiro";
             return Hero;
@@ -99,8 +113,8 @@ namespace Game
         public static Unit StartingSetupGrunt()
         {
             Unit Grunt = new Unit();
-            Grunt.BaseAttack = 1;
-            Grunt.BaseDefense = 24;
+            Grunt.BaseAttack = 5;
+            Grunt.BaseDefense = 50;
             Grunt.Name = "Grunt";
             return Grunt;
         }
@@ -108,19 +122,50 @@ namespace Game
         {
             Unit Wolf = new Unit();
             Wolf.BaseAttack = 15;
-            Wolf.BaseDefense = 75;
+            Wolf.BaseDefense = 80;
             Wolf.Name = "Wolf";
             return Wolf;
+        }
+        public static Unit StartingSetupFireElemental()
+        {
+            Unit Elemental = new Unit();
+            Elemental.BaseAttack = 1;
+            Elemental.BaseDefense = 200;
+            Elemental.MaxDefense = 200;
+            Elemental.Name = "Fire Elemental";
+            Elemental.Magic = 20;
+            Elemental.MaxMagic = 30;
+            Elemental.FireBonus = 15;
+            Elemental.Weakness = "ice";
+            Elemental.Strength = "fire";
+            return Elemental;
+        }
+        public static Unit StartingSetupIceElemental()
+        {
+            Unit Elemental = new Unit();
+            Elemental.BaseAttack = 1;
+            Elemental.BaseDefense = 200;
+            Elemental.MaxDefense = 200;
+            Elemental.Name = "Ice Elemental";
+            Elemental.Magic = 20;
+            Elemental.MaxMagic = 30;
+            Elemental.FireBonus = 15;
+            Elemental.Weakness = "fire";
+            Elemental.Strength = "ice";
+            return Elemental;
         }
         public static Unit StartingSetupBoss()
         {
             Unit Boss = new Unit();
-            Boss.BaseAttack = 15;
-            Boss.BaseDefense = 150;
-            Boss.MaxDefense = 150;
+            Boss.BaseAttack = 20;
+            Boss.BaseDefense = 200;
+            Boss.MaxDefense = 200;
             Boss.Name = "Boss";
             Boss.Magic = 15;
-            Boss.Item = 2;
+            Boss.FireBonus = 15;
+            Boss.MaxMagic = 15;
+            Boss.Strength = "fire";
+            Boss.Item = 1;
             return Boss;
         }
         public static void StartingSetupGruntSquad(List<Unit> AllEnemiesFighting)
@@ -162,6 +207,22 @@ namespace Game
             StartingSetupGruntSquad(AllEnemiesFighting);
             MatchMultiplesLoop(hero, AllEnemiesFighting);
         }
+        public static void FireElementalLoop()
+        {
+            Unit hero = StartingSetupHero();
+            Unit grunt = StartingSetupFireElemental();
+            List<Unit> AllEnemiesFighting = new List<Unit>();
+            AllEnemiesFighting.Add(grunt);
+            MatchMultiplesLoop(hero, AllEnemiesFighting);
+        }
+        public static void IceElementalLoop()
+        {
+            Unit hero = StartingSetupHero();
+            Unit grunt = StartingSetupIceElemental();
+            List<Unit> AllEnemiesFighting = new List<Unit>();
+            AllEnemiesFighting.Add(grunt);
+            MatchMultiplesLoop(hero, AllEnemiesFighting);
+        }
         ////////Allows the player to choose multiple enemies
         public static void ArmyLoop()
         {
@@ -173,14 +234,14 @@ namespace Game
         public static void AddEnemyLoop(List<Unit> AllEnemiesFighting)
         {
             int loop = 0;
-            while (loop < 5)
+            while (loop < 7)
             {
                 loop = AddEnemies(AllEnemiesFighting);
             }
         }
         public static int AddEnemies(List<Unit> AllEnemiesFighting)
         {
-            DisplayUnitMenu();
+            DisplayUnitMenu(AllEnemiesFighting);
             int choice = Convert.ToInt32(Prompt("What enemies will you face?"));
             switch (choice)
             {
@@ -191,27 +252,78 @@ namespace Game
                     AllEnemiesFighting.Add(StartingSetupWolf());
                     break;
                 case 3:
-                    AllEnemiesFighting.Add(StartingSetupBoss());
+                     StartingSetupGruntSquad(AllEnemiesFighting);                   
                     break;
                 case 4:
-                    StartingSetupGruntSquad(AllEnemiesFighting);
+                    AllEnemiesFighting.Add(StartingSetupFireElemental());
                     break;
                 case 5:
+                    AllEnemiesFighting.Add(StartingSetupIceElemental());
+                    break;
+                case 6:
+                    AllEnemiesFighting.Add(StartingSetupBoss());
+                    break;
+                case 7:
                     break;
                 default:
-                    Console.WriteLine("Incorrect Input");
                     break;
             }
             return choice;
         }
-        public static void DisplayUnitMenu()
+        public static void DisplayUnitMenu(List<Unit> AllEnemiesFighting)
         {
             Console.Clear();
+            foreach (Unit enemy in AllEnemiesFighting)
+            {
+                Console.WriteLine(enemy.Name);
+            }
+            Console.WriteLine();
             Console.WriteLine("1 - Grunt");
             Console.WriteLine("2 - Wolf");
-            Console.WriteLine("3 - Boss");
-            Console.WriteLine("4 - Grunt Squad");
-            Console.WriteLine("5 - Begin Battle");
+            Console.WriteLine("3 - Grunt Squad");
+            Console.WriteLine("4 - Fire Elemental");
+            Console.WriteLine("5 - Ice Elemental");
+            Console.WriteLine("6 - Boss");
+            Console.WriteLine("7 - Begin Battle");
+        }
+        public static void RandomArmyLoop()
+        {
+            Unit hero = StartingSetupHero();
+            List<Unit> AllEnemiesFighting = new List<Unit>();
+            AddRandomEnemyLoop(AllEnemiesFighting);
+            MatchMultiplesLoop(hero, AllEnemiesFighting);
+        }
+        public static void AddRandomEnemyLoop(List<Unit> AllEnemiesFighting)
+        {
+            int loop = 0;
+            while (loop < 100)
+            {
+                loop += RandomAddEnemies(AllEnemiesFighting);
+            }
+        }
+        public static int RandomAddEnemies(List<Unit> AllEnemiesFighting)
+        {
+            int choice = random.Next(1, 51);
+            if (choice % 10 == 0)
+            {
+                AllEnemiesFighting.Add(StartingSetupBoss());
+                choice += 30;
+            }
+            else if (choice %  7 == 0)
+            {
+                AllEnemiesFighting.Add(StartingSetupFireElemental());
+                choice += 20;
+            }
+            else if (choice % 4 == 0)
+            {
+                AllEnemiesFighting.Add(StartingSetupWolf());
+                choice += 10;
+            }
+            else
+            {
+                AllEnemiesFighting.Add(StartingSetupGrunt());
+            }
+            return choice;
         }
         /////////////////////The Battle options for 1v1 or After an enemy is selected from the Army//////////////
         public static string Match(Unit hero, Unit grunt)
@@ -248,8 +360,8 @@ namespace Game
             {
                 ailment = Match(hero, AllEnemiesFighting[option]);
             }
+            AllEnemiesAttack(hero, AllEnemiesFighting, ailment, option);
             AllEnemiesFighting.RemoveAll(item => item.BaseDefense <= 0);
-            AllEnemiesAttack(hero, AllEnemiesFighting, ailment);
             return option;
         }
         public static void MatchMultiplesLoop(Unit hero, List<Unit> AllEnemiesFighting)
@@ -263,7 +375,7 @@ namespace Game
                 Console.ReadKey();
             }
         }
-        public static void AllEnemiesAttack(Unit hero, List<Unit> AllEnemiesFighting, string ailment)
+        public static void AllEnemiesAttack(Unit hero, List<Unit> AllEnemiesFighting, string ailment, int option)
         {
             switch (ailment)
             {
@@ -306,14 +418,14 @@ namespace Game
         }
         public static void EnemyCanAttack(Unit hero, Unit grunt)
         {
-            if (grunt.Item>0 & grunt.BaseDefense<grunt.MaxDefense/4)
+            if (grunt.Item > 0 & grunt.BaseDefense < grunt.MaxDefense / 4)
             {
-                RestoreHealth(grunt); 
+                RestoreHealth(grunt);
             }
             else
             {
-            int choice = SetAttackChoice(grunt);
-            EnemyAttack(choice, hero, grunt);
+                int choice = SetAttackChoice(grunt);
+                EnemyAttack(choice, hero, grunt);
             }
         }
         public static int SetAttackChoice(Unit grunt)
@@ -321,26 +433,43 @@ namespace Game
             int choose = 0;
             if (grunt.Magic < 9)
             {
-                choose = random.Next(1, 65);
+                choose = random.Next(1, 60);
             }
-            else
+            else if (grunt.Magic<16)
             {
                 choose = random.Next(1, 101);
             }
+            else
+            {
+                choose = 70;
+            }
             return choose;
         }
-        public static int EnemyAttack(int choose, Unit hero, Unit grunt)
+        public static void EnemyAttack(int choose, Unit hero, Unit grunt)
         {
-            if (choose >= 65)
+            if (choose >= 60)
             {
-                Fire(grunt, hero);
+                EnemyMagicChoice(hero,grunt);
             }
             else
             {
                 hero.BaseDefense -= grunt.BaseAttack;
                 Console.WriteLine(grunt.Name + " did " + grunt.BaseAttack + " damage to " + hero.Name);
             }
-            return choose;
+        }
+        public static void EnemyMagicChoice(Unit hero, Unit grunt)
+        {
+            switch (grunt.Strength)
+            {
+                case "ice":
+                    Ice(grunt, hero);
+                    break;
+                case "fire":
+                    Fire(grunt, hero);
+                    break;
+                default:
+                    break;
+            }
         }
         public static int DisplayStatsAndOptions(Unit hero, Unit grunt)
         {
@@ -355,28 +484,14 @@ namespace Game
             return Convert.ToInt32(Prompt("What are you going to do?"));
         }
         /////////////////////////////////////Spells///////////////////////////////
-        public static void Fire(Unit attacker, Unit defender)
-        {
-            if (attacker.Magic > 0)
-            {
-                defender.BaseDefense -= attacker.Magic * 2;
-                Console.WriteLine(attacker.Name + "'s fire did " + attacker.Magic * 2 + " to " + defender.Name);
-                attacker.Magic -= 1;
-            }
-            else
-            {
-                Console.WriteLine("You don't have enough magic!");
-            }
-        }
-        public static string Ice(Unit attacker, Unit defender)
+        public static string Fire(Unit attacker, Unit defender)
         {
             string ailment = "";
             if (attacker.Magic > 0)
             {
-                defender.BaseDefense -= 6;
-                Console.WriteLine(attacker.Name + " did 6 damage to " + defender.Name);
-                attacker.Magic -= 1;
-                ailment = "ice";
+                ailment = "fire";
+                AttackEffectiveness(attacker, defender, ailment);
+                BurnCheck(defender);
             }
             else
             {
@@ -384,11 +499,99 @@ namespace Game
             }
             return ailment;
         }
-        public static bool CalculateFreeze()
+        public static string Ice(Unit attacker, Unit defender)
+        {
+            string ailment = "";
+            if (attacker.Magic > 0)
+            {
+                ailment = "ice";
+                AttackEffectiveness(attacker, defender, ailment);
+            }
+            else
+            {
+                Console.WriteLine("You don't have enough magic!");
+            }
+            return ailment;
+        }
+        private static void AttackEffectiveness(Unit attacker, Unit defender, string ailment)
+        {
+            int bonus = ChooseBonus(attacker, ailment);
+            if (defender.Weakness == ailment)
+            {
+                defender.BaseDefense -= ((attacker.MaxMagic + bonus) * 3);
+                Console.WriteLine("The attack was effective! " + attacker.Name + " did " + ((attacker.MaxMagic + bonus) * 3) + " damage to " + defender.Name + "!");
+                attacker.Magic -= 1;
+            }
+            else if (defender.Strength == ailment)
+            {
+                defender.BaseDefense += (defender.MaxDefense / 4);
+                Console.WriteLine("The attack was ineffective! " + defender.Name + " gained " + (defender.MaxDefense / 4) + " health!");
+                attacker.Magic -= 1;
+            }
+            else
+            {
+                defender.BaseDefense -= (attacker.MaxMagic+bonus);
+                Console.WriteLine(attacker.Name + " did " + (attacker.MaxMagic+bonus) + " damage to " + defender.Name);
+                attacker.Magic -= 1;
+            }
+        }
+        public static int ChooseBonus(Unit attacker , string ailment)
+        {
+            int bonus = 0;
+            switch (ailment)
+            {
+                case "fire":
+                    bonus = attacker.FireBonus;
+                    break;
+                case "ice":
+                    bonus = attacker.IceBonus;
+                    break;
+                default:
+                    break;
+            }
+            return bonus;
+        }
+        public static void BurnCheck(Unit defender)
+        {
+                bool burn = false;
+                burn = CalculateBurn(defender);
+                if (burn == true)
+                {
+                    defender.BaseDefense -= 15;
+                    Console.WriteLine(defender.Name + " is burned this turn! 15 extra damage dealt");
+                }
+        }
+        public static bool CalculateBurn(Unit defender)
+        {
+            bool isBurned = false;
+            int generate = random.Next(1, 101);
+            if (defender.Weakness == "fire" && generate <= 85)
+            {
+                isBurned = true;
+            }
+            else if (defender.Strength == "fire" && generate <= 1)
+            {
+                isBurned = true;
+            }
+            else if (generate <= 30)
+            {
+                isBurned  = true;
+            }
+            return isBurned;
+        }
+        public static bool CalculateFreeze(Unit defender)
         {
             bool isFrozen = false;
             int generate = random.Next(1, 101);
-            if (generate%2==0)
+            if (defender.Weakness == "ice" && generate <= 80)
+            {
+                isFrozen = true;
+            }
+            else if (defender.Strength == "ice" && generate <= 1)
+            {
+                isFrozen = true;
+            }
+            else if (generate <= 40)
             {
                 isFrozen = true;
             }
@@ -399,7 +602,7 @@ namespace Game
             bool freeze = false;
             for (int index = 0; index < AllEnemiesFighting.Count; index++)
             {
-                freeze = CalculateFreeze();
+                freeze = CalculateFreeze(AllEnemiesFighting[index]);
                 if (freeze == false)
                 {
                     EnemyCanAttack(hero, AllEnemiesFighting[index]);
@@ -438,7 +641,7 @@ namespace Game
             if (person.Item > 0)
             {
                 person.Item -= 1;
-                person.BaseDefense += person.MaxDefense/2;
+                person.BaseDefense += person.MaxDefense / 2;
                 if (person.BaseDefense > person.MaxDefense)
                 {
                     person.BaseDefense = person.MaxDefense;
