@@ -1,0 +1,3 @@
+C:\Users\cake_rulz\Documents\Visual Studio 2015\Projects\Simple Spell Game\PracticeGame\Game\obj\Release\Game.csprojResolveAssemblyReference.cache
+C:\Users\cake_rulz\Documents\Visual Studio 2015\Projects\Simple Spell Game\PracticeGame\Game\obj\Release\Game.exe
+C:\Users\cake_rulz\Documents\Visual Studio 2015\Projects\Simple Spell Game\PracticeGame\Game\obj\Release\Game.pdb

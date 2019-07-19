@@ -1,10 +1,3 @@
-c:\users\onshore\documents\visual studio 2015\Projects\Game\Game\bin\Debug\Game.exe.config
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\bin\Debug\Game.exe
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\bin\Debug\Game.pdb
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\obj\Debug\Game.csprojResolveAssemblyReference.cache
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\obj\Debug\Game.exe
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\obj\Debug\Game.pdb
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\bin\Debug\Game.exe.manifest
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\bin\Debug\Game.application
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\obj\Debug\Game.exe.manifest
-C:\Users\Onshore\Documents\Visual Studio 2015\Projects\Game\Game\obj\Debug\Game.application
+C:\Users\cake_rulz\Documents\Visual Studio 2015\Projects\Simple Spell Game\PracticeGame\Game\obj\Debug\Game.exe
+C:\Users\cake_rulz\Documents\Visual Studio 2015\Projects\Simple Spell Game\PracticeGame\Game\obj\Debug\Game.pdb
+C:\Users\cake_rulz\Documents\Visual Studio 2015\Projects\Simple Spell Game\PracticeGame\Game\bin\Debug\Game.exe.config
