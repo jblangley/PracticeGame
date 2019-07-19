@@ -9,6 +9,8 @@ You are Hiro, on an text based fighter ready to take on any enemy in your way! T
 2) Double click "Game.exe"
 
 3) To navigate the game input a number followed by the enter key. example of a game follows (keystroke; next keystroke)
+  
+  
   a) Lets start the game.
     > 1; ENTER; 
     
